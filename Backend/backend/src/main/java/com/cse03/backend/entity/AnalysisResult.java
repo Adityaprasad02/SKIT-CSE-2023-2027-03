@@ -1,5 +1,6 @@
 package com.cse03.backend.entity;
 
+import com.cse03.backend.entity.enums.AnalysisStatus;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
