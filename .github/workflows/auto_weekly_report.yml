@@ -33,8 +33,16 @@ jobs:
         run: |
           mkdir -p weekly_reports
           mv *_Weekly_Progress_Report_Form-3_*.pdf weekly_reports/
+        
+      - name: Upload PDF (Manual Test)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Weekly-Form3-Test
+          path: weekly_reports/*.pdf
 
       - name: Commit Report
+        if: github.event_name == 'schedule'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
