@@ -1,0 +1,45 @@
+name: Weekly Progress Report Auto-Commit
+
+on:
+  schedule:
+    - cron: '29 18 * * 4'   # Thursday 11:59 PM IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: pip install reportlab matplotlib
+
+      - name: Generate Weekly Report
+        run: python generate_report.py weekly
+
+      - name: Save Report
+        run: |
+          mkdir -p weekly_reports
+          mv *_Weekly_Progress_Report_Form-3_*.pdf weekly_reports/
+
+      - name: Commit Report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add weekly_reports/
+          if ! git diff --staged --quiet; then
+            git commit -m "docs: archive Form-3 weekly report [skip ci]"
+            git push
+          fi
