@@ -89,8 +89,12 @@ def get_git_metrics(interval="weekly"):
                 current_author = None
                 continue
             # -----------------------------
+
+            NAME_ALIAS = {
+            "Adityaprasad02": "Aditya Prasad Sahoo"
+            }
             
-            current_author = author
+            current_author = NAME_ALIAS.get(author, author)
             current_date_str = date_str
             
             students[current_author]["commits"] += 1
