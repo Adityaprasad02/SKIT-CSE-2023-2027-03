@@ -3,6 +3,7 @@ package com.cse03.backend.controller;
 
 import com.cse03.backend.dto.request.AnalysisRequest;
 import com.cse03.backend.dto.response.AnalysisResponse;
+import com.cse03.backend.dto.response.ApiResponse;
 import com.cse03.backend.service.AnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     @PostMapping("/resumes/{resumeId}/analyses")
-    public ResponseEntity<AnalysisResponse> createAnalysis(
+    public ResponseEntity<ApiResponse<AnalysisResponse>> createAnalysis(
             @PathVariable Long resumeId,
             @Valid @RequestBody AnalysisRequest request) {
 
@@ -29,24 +30,42 @@ public class AnalysisController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(
+                        ApiResponse.success(
+                                "Analysis created successfully",
+                                response
+                        )
+                );
     }
 
+
     @GetMapping("/analyses/{id}")
-    public ResponseEntity<AnalysisResponse> getAnalysisById(
+    public ResponseEntity<ApiResponse<AnalysisResponse>> getAnalysisById(
             @PathVariable Long id) {
 
+        AnalysisResponse response =
+                analysisService.getAnalysisById(id);
+
         return ResponseEntity.ok(
-                analysisService.getAnalysisById(id)
+                ApiResponse.success(
+                        "Analysis fetched successfully",
+                        response
+                )
         );
     }
 
     @GetMapping("/resumes/{resumeId}/analyses")
-    public ResponseEntity<List<AnalysisResponse>> getAnalysesByResume(
+    public ResponseEntity<ApiResponse<List<AnalysisResponse>>> getAnalysesByResume(
             @PathVariable Long resumeId) {
 
+        List<AnalysisResponse> responses =
+                analysisService.getAnalysesByResume(resumeId);
+
         return ResponseEntity.ok(
-                analysisService.getAnalysesByResume(resumeId)
+                ApiResponse.success(
+                        "Analyses fetched successfully",
+                        responses
+                )
         );
     }
 }
