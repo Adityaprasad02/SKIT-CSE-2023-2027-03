@@ -4,6 +4,7 @@ import com.cse03.backend.dto.request.AnalysisRequest;
 import com.cse03.backend.dto.response.AnalysisResponse;
 import com.cse03.backend.entity.AnalysisResult;
 import com.cse03.backend.entity.Resume;
+import com.cse03.backend.entity.enums.AnalysisStatus;
 import com.cse03.backend.exception.ResourceNotFoundException;
 import com.cse03.backend.repository.AnalysisResultRepository;
 import com.cse03.backend.repository.ResumeRepository;
