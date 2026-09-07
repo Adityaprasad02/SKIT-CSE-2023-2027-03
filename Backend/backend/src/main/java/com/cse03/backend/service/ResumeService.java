@@ -2,8 +2,11 @@ package com.cse03.backend.service;
 
 import com.cse03.backend.dto.request.ResumeRequest;
 import com.cse03.backend.dto.response.ResumeResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+
 
 public interface ResumeService {
 
