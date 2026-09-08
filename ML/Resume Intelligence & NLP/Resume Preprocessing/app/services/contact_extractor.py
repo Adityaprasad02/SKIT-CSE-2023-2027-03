@@ -73,16 +73,20 @@ def extract_location(text: str):
 
     second_line = lines[1]
 
-    # Email usually marks the end of the location
-    if "@" in second_line:
-        location = second_line.split("@")[0]
+    # Remove everything starting from the email
+    second_line = re.sub(
+        r"\s+[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}.*$",
+        "",
+        second_line
+    )
 
-        # Remove contact separators and trailing spaces
-        location = re.split(r"\s*(?:⋄|\||•)\s*", location)[0]
+    # Remove contact separators
+    location = re.split(
+        r"\s*(?:⋄|\||•)\s*",
+        second_line
+    )[0]
 
-        return location.strip()
-
-    return second_line
+    return location.strip() if location.strip() else None
 
 
 def extract_name(text: str):
