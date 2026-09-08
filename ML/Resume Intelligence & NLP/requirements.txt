@@ -3,3 +3,5 @@ python-docx
 fastapi
 uvicorn
 python-multipart
+sentence-transformers
+scikit-learn
