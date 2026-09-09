@@ -13,6 +13,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNotFound(
             ResourceNotFoundException exception) {
 
+        System.out.println(exception.getMessage()); // check for error
+
         ErrorResponse response = ErrorResponse.of(
                 HttpStatus.NOT_FOUND.value(),
                 exception.getMessage()

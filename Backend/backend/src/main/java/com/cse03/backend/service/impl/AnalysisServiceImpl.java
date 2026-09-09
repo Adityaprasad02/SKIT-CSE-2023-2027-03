@@ -30,8 +30,9 @@ public class AnalysisServiceImpl implements AnalysisService {
             AnalysisRequest request) {
 
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(
-                );
+                .orElseThrow( () -> new ResourceNotFoundException(
+                        "Resume not found with id: " + resumeId
+                ) ) ;
 
         AnalysisResult analysis = AnalysisResult.builder()
                 .resume(resume)
