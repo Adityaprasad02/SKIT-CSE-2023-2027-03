@@ -7,31 +7,93 @@ SECTION_NAMES = {
         "work experience",
         "professional experience",
         "employment history",
+        "work history",
+        "internship",
+        "internships",
+        "online internship",
     ],
+
     "skills": [
         "skills",
         "technical skills",
+        "technical skill",
         "core skills",
         "key skills",
+        "key skill",
+        "programming skills",
+        "technical expertise",
+        "areas of expertise",
     ],
+
     "education": [
         "education",
         "academic background",
         "educational background",
+        "academic qualifications",
+        "academic qualification",
+        "educational qualifications",
+        "educational qualification",
+        "academic details",
     ],
+
     "projects": [
         "projects",
         "personal projects",
         "academic projects",
+        "key projects",
+        "major projects",
+        "project work",
+        "project experience",
     ],
+
+    "research": [
+        "research",
+        "research experience",
+        "research projects",
+        "research work",
+        "thesis",
+        "master's thesis",
+        "masters thesis",
+        "msr thesis",
+        "dissertation",
+    ],
+
     "achievements": [
         "achievements",
         "accomplishments",
         "awards",
+        "scholastic achievements",
+        "academic achievements",
+        "scholastic accomplishments",
     ],
+
     "certifications": [
         "certifications",
         "certificates",
+        "professional certifications",
+        "professional certificates",
+    ],
+
+    "responsibilities": [
+        "positions of responsibility",
+        "position of responsibility",
+        "leadership",
+        "leadership experience",
+    ],
+
+    "courses": [
+        "relevant courses",
+        "relevant coursework",
+        "coursework",
+        "courses",
+    ],
+
+    "extracurricular": [
+        "extra-curricular activities",
+        "extracurricular activities",
+        "extra curricular activities",
+        "extra-curricular",
+        "extracurricular",
     ],
 }
 
@@ -43,15 +105,19 @@ def normalize_heading(line: str) -> str:
 
     line = line.strip().lower()
 
-    # Remove common heading punctuation
-    line = re.sub(r"[:\-]+$", "", line)
+    # Remove common punctuation at the end.
+    line = re.sub(r"[:*\-–—]+$", "", line)
+
+    # Normalize repeated whitespace.
+    line = re.sub(r"\s+", " ", line)
 
     return line.strip()
 
 
 def detect_section(line: str):
     """
-    Check whether a line is a known resume section heading.
+    Detect whether a line represents a known
+    resume section heading.
     """
 
     normalized_line = normalize_heading(line)
@@ -65,7 +131,7 @@ def detect_section(line: str):
 
 def extract_sections(text: str) -> dict:
     """
-    Divide resume text into logical sections.
+    Extract normalized sections from resume text.
     """
 
     sections = {
@@ -73,8 +139,12 @@ def extract_sections(text: str) -> dict:
         "skills": [],
         "education": [],
         "projects": [],
+        "research": [],
         "achievements": [],
         "certifications": [],
+        "responsibilities": [],
+        "courses": [],
+        "extracurricular": [],
         "other": [],
     }
 
@@ -83,6 +153,7 @@ def extract_sections(text: str) -> dict:
     lines = text.split("\n")
 
     for line in lines:
+
         line = line.strip()
 
         if not line:
@@ -96,7 +167,6 @@ def extract_sections(text: str) -> dict:
 
         sections[current_section].append(line)
 
-    # Convert lists into text
     for section in sections:
         sections[section] = "\n".join(sections[section])
 
