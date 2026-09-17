@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -59,4 +61,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);
     }
+
+
+    @ExceptionHandler(DBException.class)
+    public ResponseEntity<?> handleDBExceptions(DBException e){
+        return new ResponseEntity<>( Map.of( "error" , e.getMessage()) , HttpStatus.BAD_REQUEST) ;
+    }
+
 }
