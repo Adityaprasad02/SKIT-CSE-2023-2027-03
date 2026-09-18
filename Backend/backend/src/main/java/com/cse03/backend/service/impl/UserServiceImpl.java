@@ -13,44 +13,40 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository ;
+	private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	public UserServiceImpl(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-    @Override
-    @Transactional
-    public ResponseSignUp createUser(RequestSignUp requestSignUp) throws DBException {
-        String name = requestSignUp.name();
-        String email = requestSignUp.email();
-        LoginAuthProvider loginAuthProvider = requestSignUp.loginAuthProvider()  ;
-        String username  = requestSignUp.username()  ;
-        String password =  requestSignUp.password() ;
+	@Override
+	@Transactional
+	public ResponseSignUp createUser(RequestSignUp requestSignUp) throws DBException {
+		String name = requestSignUp.name();
+		String email = requestSignUp.email();
+		LoginAuthProvider loginAuthProvider = requestSignUp.loginAuthProvider();
+		String username = requestSignUp.username();
+		String password = requestSignUp.password();
 
-        if ( userRepository.findByEmail(email).isPresent() ) {
-            throw new DBException("user with email : " + email + " already exists ! " );
-        };
+		if (userRepository.findByEmail(email).isPresent()) {
+			throw new DBException("user with email : " + email + " already exists ! ");
+		}
+		User user = User
+			.builder()
+			.name(name)
+			.email(email)
+			.username(username)
+			.password(password)
+			.loginAuthProvider(loginAuthProvider)
+			.build();
 
-        User user =  User.builder()
-                .name(name)
-                .email(email)
-                .username(username)
-                .loginAuthProvider(loginAuthProvider)
-                .build(); ;
-
-
-           User save =  userRepository.save(user) ;
-
-
-       return  new ResponseSignUp(
-                save.getId(),
-                save.getName(),
-               save.getUsername(),
-               save.getEmail(),
-               save.getLoginAuthProvider()
-       );
-
-
-    }
+		User save = userRepository.save(user);
+		return new ResponseSignUp(
+			save.getId(),
+			save.getName(),
+			save.getUsername(),
+			save.getEmail(),
+			save.getLoginAuthProvider()
+		);
+	}
 }

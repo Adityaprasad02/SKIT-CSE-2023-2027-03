@@ -1,71 +1,48 @@
 package com.cse03.backend.exception;
 
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(
-            ResourceNotFoundException exception) {
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException exception) {
+		System.out.println(exception.getMessage()); // check for error
 
-        System.out.println(exception.getMessage()); // check for error
+		ErrorResponse response = ErrorResponse.of(HttpStatus.NOT_FOUND.value(), exception.getMessage());
 
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.NOT_FOUND.value(),
-                exception.getMessage()
-        );
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
-    }
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
+		String message = exception
+			.getBindingResult()
+			.getFieldErrors()
+			.stream()
+			.findFirst()
+			.map(error -> error.getField() + ": " + error.getDefaultMessage())
+			.orElse("Invalid request");
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(
-            MethodArgumentNotValidException exception) {
+		ErrorResponse response = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), message);
 
-        String message = exception.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .findFirst()
-                .map(error ->
-                        error.getField() + ": " + error.getDefaultMessage())
-                .orElse("Invalid request");
+		return ResponseEntity.badRequest().body(response);
+	}
 
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.BAD_REQUEST.value(),
-                message
-        );
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleGeneric(Exception exception) {
+		ErrorResponse response = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
 
-        return ResponseEntity
-                .badRequest()
-                .body(response);
-    }
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	}
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(
-            Exception exception) {
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred"
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(response);
-    }
-
-
-    @ExceptionHandler(DBException.class)
-    public ResponseEntity<?> handleDBExceptions(DBException e){
-        return new ResponseEntity<>( Map.of( "error" , e.getMessage()) , HttpStatus.BAD_REQUEST) ;
-    }
-
+	@ExceptionHandler(DBException.class)
+	public ResponseEntity<?> handleDBExceptions(DBException e) {
+		return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
+	}
 }
