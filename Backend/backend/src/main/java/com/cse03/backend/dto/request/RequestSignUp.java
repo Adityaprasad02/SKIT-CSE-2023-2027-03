@@ -23,6 +23,5 @@ public record RequestSignUp (
         String password,
 
         @NotNull
-        @NotBlank
         LoginAuthProvider loginAuthProvider
 ){}
