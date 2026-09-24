@@ -2,6 +2,7 @@ import re
 
 
 SECTION_NAMES = {
+
     "experience": [
         "experience",
         "work experience",
@@ -38,12 +39,14 @@ SECTION_NAMES = {
 
     "projects": [
         "projects",
+        "technical projects",
         "personal projects",
         "academic projects",
         "key projects",
         "major projects",
         "project work",
         "project experience",
+        "technical project",
     ],
 
     "research": [
@@ -123,7 +126,13 @@ def detect_section(line: str):
     normalized_line = normalize_heading(line)
 
     for section, headings in SECTION_NAMES.items():
-        if normalized_line in headings:
+
+        normalized_headings = [
+            normalize_heading(heading)
+            for heading in headings
+        ]
+
+        if normalized_line in normalized_headings:
             return section
 
     return None
@@ -150,7 +159,7 @@ def extract_sections(text: str) -> dict:
 
     current_section = "other"
 
-    lines = text.split("\n")
+    lines = text.splitlines()
 
     for line in lines:
 
@@ -162,12 +171,16 @@ def extract_sections(text: str) -> dict:
         detected_section = detect_section(line)
 
         if detected_section:
+
             current_section = detected_section
             continue
 
         sections[current_section].append(line)
 
     for section in sections:
-        sections[section] = "\n".join(sections[section])
+
+        sections[section] = "\n".join(
+            sections[section]
+        )
 
     return sections
