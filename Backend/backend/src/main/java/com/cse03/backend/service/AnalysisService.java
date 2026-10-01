@@ -2,8 +2,10 @@ package com.cse03.backend.service;
 
 import com.cse03.backend.dto.request.AnalysisRequest;
 import com.cse03.backend.dto.response.AnalysisResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 public interface AnalysisService {
 
