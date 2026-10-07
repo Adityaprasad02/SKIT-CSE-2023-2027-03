@@ -1,0 +1,45 @@
+{
+  "machine_learning": {
+    "parent": "artificial_intelligence"
+  },
+
+  "deep_learning": {
+    "parent": "machine_learning"
+  },
+
+  "pytorch": {
+    "parent": "deep_learning"
+  },
+
+  "tensorflow": {
+    "parent": "deep_learning"
+  },
+
+  "javascript": {
+    "parent": "programming"
+  },
+
+  "python": {
+    "parent": "programming"
+  },
+
+  "cpp": {
+    "parent": "programming"
+  },
+
+  "react": {
+    "parent": "web_development"
+  },
+
+  "nodejs": {
+    "parent": "web_development"
+  },
+
+  "docker": {
+    "parent": "devops"
+  },
+
+  "kubernetes": {
+    "parent": "devops"
+  }
+}

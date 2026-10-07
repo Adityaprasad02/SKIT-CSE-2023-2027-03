@@ -1,0 +1,23 @@
+{
+  "js": "javascript",
+  "ecmascript": "javascript",
+
+  "cpp": "cpp",
+  "c plus plus": "cpp",
+
+  "reactjs": "react",
+  "react.js": "react",
+
+  "node": "nodejs",
+  "node js": "nodejs",
+
+  "k8s": "kubernetes",
+
+  "tf": "tensorflow",
+
+  "torch": "pytorch",
+
+  "ml": "machine_learning",
+
+  "dl": "deep_learning"
+}
