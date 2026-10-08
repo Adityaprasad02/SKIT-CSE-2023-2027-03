@@ -1,6 +1,7 @@
 package com.cse03.backend.config;
 
 
+import com.cse03.backend.entity.User;
 import com.cse03.backend.service.impl.CustomUserDetailService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -58,7 +60,9 @@ public class SecurityConfig {
                             response.setStatus ( HttpServletResponse.SC_UNAUTHORIZED );
                             response.getWriter ( ).write ( "{\"error\":\"Unauthorized\",\"message\":\"" + authException.getMessage ( ) + "\"}" );
                         } ) )
-                .logout ( AbstractHttpConfigurer :: disable );
+                .logout ( AbstractHttpConfigurer :: disable )
+                .addFilterBefore ( jwtFilter , UsernamePasswordAuthenticationFilter.class )
+         ;
 
 
         return httpSecurity.build ( );
