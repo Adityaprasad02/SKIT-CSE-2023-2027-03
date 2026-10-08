@@ -1,4 +1,4 @@
-package com.cse03.backend.entity;
+package com.cse03.backend.dto.response;
 
 import com.cse03.backend.entity.enums.LoginAuthProvider;
 

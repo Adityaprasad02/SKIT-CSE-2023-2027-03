@@ -7,19 +7,17 @@ import jakarta.validation.constraints.NotNull;
 public record RequestSignUp (
 
         @NotNull
-        @NotBlank
+        @NotBlank(message = "name is required")
         String name,
 
         @NotNull
-        @NotBlank
+        @NotBlank(message = "username is required")
         String username ,
 
         @NotNull
-        @NotBlank
+        @NotBlank(message = "email is required")
         String email ,
 
-        @NotNull
-        @NotBlank
         String password,
 
         @NotNull

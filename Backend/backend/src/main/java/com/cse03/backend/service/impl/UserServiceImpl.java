@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 		String password = requestSignUp.password();
 
 		if (userRepository.findByEmail(email).isPresent()) {
-			throw new DBException("user with email : " + email + " already exists ! ");
+			throw new DBException("exist with email : " + email);
 		}
 		User user = User
 			.builder()
