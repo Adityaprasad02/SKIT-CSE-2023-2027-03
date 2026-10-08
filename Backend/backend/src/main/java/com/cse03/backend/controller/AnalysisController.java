@@ -21,18 +21,18 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     @PostMapping("/resumes/{resumeId}/analyses")
-    public ResponseEntity<ApiResponse<AnalysisResponse>> createAnalysis(
-            @PathVariable Long resumeId,
-            @Valid @RequestBody AnalysisRequest request) {
+    public ResponseEntity<ApiResponse<AnalysisResponse>> createAnalysis (
+            @PathVariable Long resumeId ,
+            @Valid @RequestBody AnalysisRequest request ) {
 
         AnalysisResponse response =
-                analysisService.createAnalysis(resumeId, request);
+                analysisService.createAnalysis ( resumeId , request );
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(
-                        ApiResponse.success(
-                                "Analysis created successfully",
+                .status ( HttpStatus.CREATED )
+                .body (
+                        ApiResponse.success (
+                                "Analysis created successfully" ,
                                 response
                         )
                 );
@@ -40,30 +40,30 @@ public class AnalysisController {
 
 
     @GetMapping("/analyses/{id}")
-    public ResponseEntity<ApiResponse<AnalysisResponse>> getAnalysisById(
-            @PathVariable Long id) {
+    public ResponseEntity<ApiResponse<AnalysisResponse>> getAnalysisById (
+            @PathVariable Long id ) {
 
         AnalysisResponse response =
-                analysisService.getAnalysisById(id);
+                analysisService.getAnalysisById ( id );
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Analysis fetched successfully",
+        return ResponseEntity.ok (
+                ApiResponse.success (
+                        "Analysis fetched successfully" ,
                         response
                 )
         );
     }
 
     @GetMapping("/resumes/{resumeId}/analyses")
-    public ResponseEntity<ApiResponse<List<AnalysisResponse>>> getAnalysesByResume(
-            @PathVariable Long resumeId) {
+    public ResponseEntity<ApiResponse<List<AnalysisResponse>>> getAnalysesByResume (
+            @PathVariable Long resumeId ) {
 
         List<AnalysisResponse> responses =
-                analysisService.getAnalysesByResume(resumeId);
+                analysisService.getAnalysesByResume ( resumeId );
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Analyses fetched successfully",
+        return ResponseEntity.ok (
+                ApiResponse.success (
+                        "Analyses fetched successfully" ,
                         responses
                 )
         );

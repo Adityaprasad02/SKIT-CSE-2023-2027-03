@@ -45,4 +45,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleDBExceptions(DBException e) {
 		return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(DenialException.class)
+	public ResponseEntity<?> handleDenialExceptions(DenialException e){
+		return new ResponseEntity<>( Map.of( "error" , e.getMessage()) , HttpStatus.BAD_REQUEST) ;
+	}
 }

@@ -8,7 +8,10 @@ import com.cse03.backend.exception.DBException;
 import com.cse03.backend.repository.UserRepository;
 import com.cse03.backend.service.UserService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,6 +21,8 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
+
+	private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12) ;
 
 	@Override
 	@Transactional
@@ -29,14 +34,14 @@ public class UserServiceImpl implements UserService {
 		String password = requestSignUp.password();
 
 		if (userRepository.findByEmail(email).isPresent()) {
-			throw new DBException("user with email : " + email + " already exists ! ");
+			throw new DBException("exist with email : " + email);
 		}
 		User user = User
 			.builder()
 			.name(name)
 			.email(email)
 			.username(username)
-			.password(password)
+			.password(password==null ? null : encoder.encode(password))
 			.loginAuthProvider(loginAuthProvider)
 			.build();
 
@@ -48,5 +53,10 @@ public class UserServiceImpl implements UserService {
 			save.getEmail(),
 			save.getLoginAuthProvider()
 		);
+	}
+
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 }
