@@ -1,136 +1,91 @@
 import re
 
-
-SKILL_ALIASES = {
-    "python": "Python",
-    "java": "Java",
-    "c": "C",
-    "c++": "C++",
-    "c#": "C#",
-    "kotlin": "Kotlin",
-    "javascript": "JavaScript",
-    "typescript": "TypeScript",
-
-    "android": "Android",
-    "android development": "Android Development",
-    "navigation component": "Navigation Component",
-    "mvvm": "MVVM",
-    "mvc": "MVC",
-    "data binding": "Data Binding",
-    "view models": "View Models",
-    "live data": "LiveData",
-    "coroutines": "Coroutines",
-    "retrofit": "Retrofit",
-
-    "data structures": "Data Structures",
-    "algorithms": "Algorithms",
-    "oop": "Object-Oriented Programming",
-    "oops": "Object-Oriented Programming",
-    "object oriented programming": "Object-Oriented Programming",
-    "problem solving": "Problem Solving",
-
-    "git": "Git",
-    "jira": "Jira",
-    "azure devops": "Azure DevOps",
-    "agile": "Agile",
-    "solid": "SOLID",
-    "ci/cd": "CI/CD",
-    "restful api": "REST API",
-    "rest api": "REST API",
-
-    "sentry": "Sentry",
-    "repository design pattern": "Repository Design Pattern",
-    "diffie-hellman": "Diffie-Hellman",
-    "upi": "UPI",
-}
+from app.services.skill_dictionary import SKILL_ALIASES
 
 
-SKILL_CATEGORIES = {
-    "programming_languages": [
-        "python",
-        "java",
-        "c",
-        "c++",
-        "c#",
-        "kotlin",
-        "javascript",
-        "typescript",
-    ],
-
-    "mobile_development": [
-        "android",
-        "android development",
-        "navigation component",
-        "mvvm",
-        "mvc",
-        "data binding",
-        "view models",
-        "live data",
-        "coroutines",
-        "retrofit",
-    ],
-
-    "computer_science": [
-        "data structures",
-        "algorithms",
-        "oop",
-        "oops",
-        "object oriented programming",
-        "problem solving",
-    ],
-
-    "tools_and_practices": [
-        "git",
-        "jira",
-        "azure devops",
-        "agile",
-        "solid",
-        "ci/cd",
-        "restful api",
-        "rest api",
-    ],
-
-    "other_technologies": [
-        "sentry",
-        "repository design pattern",
-        "diffie-hellman",
-        "upi",
-    ],
-}
-
-
-def find_skill(text: str, skill: str) -> bool:
+def normalize_skill_text(text: str) -> str:
     """
-    Check whether a skill exists as a complete term.
+    Normalize text before skill matching.
     """
 
-    pattern = r"(?<!\w)" + re.escape(skill) + r"(?!\w)"
+    text = text.lower()
 
-    return bool(re.search(pattern, text, re.IGNORECASE))
+    text = text.replace("–", "-")
+    text = text.replace("—", "-")
+
+    text = re.sub(r"\s+", " ", text)
+
+    return text.strip()
 
 
-def extract_skills(skills_text: str) -> dict:
+def contains_skill(text: str, alias: str) -> bool:
     """
-    Extract and normalize skills from the Skills section.
+    Check whether an alias occurs as a complete term.
     """
 
-    result = {}
+    pattern = (
+        r"(?<![a-z0-9])"
+        + re.escape(alias)
+        + r"(?![a-z0-9])"
+    )
 
-    for category, skills in SKILL_CATEGORIES.items():
+    return re.search(pattern, text) is not None
 
-        found_skills = set()
 
-        for skill in skills:
+def extract_skills(text: str) -> set[str]:
+    """
+    Extract canonical skills from text.
 
-            if find_skill(skills_text, skill):
+    When multiple aliases overlap, prefer the more
+    specific/longer skill phrase.
+    """
 
-                canonical_name = SKILL_ALIASES.get(
-                    skill,
-                    skill
+    if not text:
+        return set()
+
+    normalized_text = normalize_skill_text(text)
+
+    detected_skills = set()
+    matched_aliases = {}
+
+    for canonical_skill, aliases in SKILL_ALIASES.items():
+
+        for alias in aliases:
+
+            normalized_alias = normalize_skill_text(alias)
+
+            if contains_skill(
+                normalized_text,
+                normalized_alias,
+            ):
+                detected_skills.add(canonical_skill)
+
+                matched_aliases[canonical_skill] = (
+                    normalized_alias
                 )
 
-                found_skills.add(canonical_name)
+                break
 
-        result[category] = sorted(found_skills)
+    # Remove a shorter skill when it is completely
+    # contained inside a more specific detected skill.
+    skills_to_remove = set()
 
-    return result
+    for skill_a, alias_a in matched_aliases.items():
+
+        for skill_b, alias_b in matched_aliases.items():
+
+            if skill_a == skill_b:
+                continue
+
+            if (
+                alias_a != alias_b
+                and alias_a in alias_b
+                and len(alias_b) > len(alias_a)
+            ):
+                skills_to_remove.add(skill_a)
+
+    detected_skills.difference_update(
+        skills_to_remove
+    )
+
+    return detected_skills
