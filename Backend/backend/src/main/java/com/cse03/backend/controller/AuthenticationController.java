@@ -51,15 +51,16 @@ public class AuthenticationController {
 
     private final RefreshTokenRepository refreshTokenRepository ;
 
-    private CookieService cookieService ;
+    private final CookieService cookieService ;
 
-    public AuthenticationController( UserService userService, UserServiceImpl userServiceImpl , AuthenticationManager authenticationManager , UserRepository userRepository , JwtService jwtService , RefreshTokenRepository refreshTokenRepository ) {
+    public AuthenticationController( UserService userService, UserServiceImpl userServiceImpl , AuthenticationManager authenticationManager , UserRepository userRepository , JwtService jwtService , RefreshTokenRepository refreshTokenRepository , CookieService cookieService ) {
         this.userServiceImpl = userServiceImpl;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
 
         this.jwtService = jwtService;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.cookieService = cookieService;
     }
 
     @PostMapping("/signup/")
