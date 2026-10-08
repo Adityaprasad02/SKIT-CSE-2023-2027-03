@@ -1,6 +1,6 @@
 package com.cse03.backend.filter;
 
-import com.cse03.backend.service.JwtService;
+import com.cse03.backend.service.impl.JwtService;
 import com.cse03.backend.service.impl.CustomUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

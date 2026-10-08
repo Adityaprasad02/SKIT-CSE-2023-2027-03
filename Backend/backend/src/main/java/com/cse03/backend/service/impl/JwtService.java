@@ -1,4 +1,4 @@
-package com.cse03.backend.service;
+package com.cse03.backend.service.impl;
 
 
 import com.cse03.backend.entity.User;
@@ -38,10 +38,10 @@ public class JwtService {
 
 
     public JwtService (
-                 @Value( "${spring.security.secret}" )  String secret ,
-                 @Value( "${spring.security.issuer}" )  String issuer ,
-                 @Value( "${spring.security.access-token-expiration}" )  Long accessTokenExpiration ,
-                 @Value( "${spring.security.refresh-token-expiration}" )  Long refreshTokenExpiration
+                 @Value( "${security.jwt.secret}" )  String secret ,
+                 @Value( "${security.jwt.issuer}" )  String issuer ,
+                 @Value( "${security.jwt.access-token-expiration}" )  Long accessTokenExpiration ,
+                 @Value( "${security.jwt.refresh-token-expiration}" )  Long refreshTokenExpiration
     ) {
         this.secret = secret;
         this.issuer = issuer;

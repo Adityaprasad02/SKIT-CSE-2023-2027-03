@@ -2,6 +2,7 @@ package com.cse03.backend.config;
 
 
 import com.cse03.backend.entity.User;
+import com.cse03.backend.filter.JwtFilter;
 import com.cse03.backend.service.impl.CustomUserDetailService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -31,10 +32,13 @@ public class SecurityConfig {
 
     private final CustomUserDetailService customUserDetailService ;
 
+    private final JwtFilter jwtFilter ;
 
-    public SecurityConfig(CustomUserDetailService customUserDetailService) {
+
+    public SecurityConfig( CustomUserDetailService customUserDetailService , JwtFilter jwtFilter ) {
         this.customUserDetailService = customUserDetailService;
 
+        this.jwtFilter = jwtFilter;
     }
 
 
