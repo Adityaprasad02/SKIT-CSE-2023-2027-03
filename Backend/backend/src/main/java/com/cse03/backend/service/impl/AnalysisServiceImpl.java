@@ -52,6 +52,9 @@ public class AnalysisServiceImpl implements AnalysisService {
         AnalysisResult analysis =
                 analysisResultRepository.findById(id)
                         .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Analysis not found with id: " + id
+                                )
                         );
 
         return toResponse(analysis);
