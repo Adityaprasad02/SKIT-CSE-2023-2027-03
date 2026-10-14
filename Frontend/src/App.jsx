@@ -6,45 +6,54 @@ import {
 
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import Dashboard from "./pages/Dashboard";
+import DashboardPlaceholder from "./pages/DashboardPlaceholder";
 
 function App() {
   return (
     <BrowserRouter>
+      <Routes>
+        {/* Public Website */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+        </Route>
 
-<Routes>
+        {/* Authentication */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+        </Route>
 
-{/* Public Website */}
-<Route element={<MainLayout />}>
-  <Route path="/" element={<Home />} />
-</Route>
+        {/* Dashboard */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
 
-{/* Authentication */}
-<Route element={<AuthLayout />}>
+          <Route
+            path="/dashboard/resumes"
+            element={<DashboardPlaceholder />}
+          />
 
-  <Route
-    path="/login"
-    element={<Login />}
-  />
+          <Route
+            path="/dashboard/job-matching"
+            element={<DashboardPlaceholder />}
+          />
 
-  <Route
-    path="/signup"
-    element={<Signup />}
-  />
-
-  <Route
-    path="/forgot-password"
-    element={<ForgotPassword />}
-  />
-
-</Route>
-
-</Routes>
-
+          <Route
+            path="/dashboard/account"
+            element={<DashboardPlaceholder />}
+          />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
