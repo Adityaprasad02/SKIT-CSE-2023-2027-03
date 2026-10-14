@@ -88,13 +88,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         userId = UUID.fromString ( e.getMessage().substring(6) );
                         log.info ("{}" , e.getMessage () + " " + userId);
                              response.sendRedirect("http://localhost:8080" + "/oauth/success");
-                             return;
                     }else{
                         //log.info("{}" , e.getMessage());
                         String errorMessage = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
                         response.sendRedirect("http://localhost:8080" + "/login?message="+errorMessage);
-                        return ;
                     }
+                    return;
 
                     //return;
                 }
