@@ -5,12 +5,14 @@ import com.cse03.backend.dto.response.AnalysisResponse;
 import com.cse03.backend.entity.AnalysisResult;
 import com.cse03.backend.entity.Resume;
 import com.cse03.backend.entity.enums.AnalysisStatus;
+import com.cse03.backend.exception.DBException;
 import com.cse03.backend.exception.ResourceNotFoundException;
 import com.cse03.backend.repository.AnalysisResultRepository;
 import com.cse03.backend.repository.ResumeRepository;
 import com.cse03.backend.service.AnalysisService;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,8 +42,12 @@ public class AnalysisServiceImpl implements AnalysisService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        AnalysisResult saved =
-                analysisResultRepository.save(analysis);
+        AnalysisResult saved;
+        try {
+            saved = analysisResultRepository.save(analysis);
+        } catch (DataAccessException exception) {
+            throw new DBException("Unable to create analysis for resume: " + resumeId);
+        }
 
         return toResponse(saved);
     }

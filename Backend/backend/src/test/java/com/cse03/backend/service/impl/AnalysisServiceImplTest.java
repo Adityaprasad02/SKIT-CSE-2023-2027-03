@@ -5,6 +5,7 @@ import com.cse03.backend.dto.response.AnalysisResponse;
 import com.cse03.backend.entity.AnalysisResult;
 import com.cse03.backend.entity.Resume;
 import com.cse03.backend.entity.enums.AnalysisStatus;
+import com.cse03.backend.exception.DBException;
 import com.cse03.backend.exception.ResourceNotFoundException;
 import com.cse03.backend.repository.AnalysisResultRepository;
 import com.cse03.backend.repository.ResumeRepository;
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 class AnalysisServiceImplTest {
@@ -77,5 +79,21 @@ class AnalysisServiceImplTest {
                 .hasMessage("Resume not found with id: " + resumeId);
 
         verify(analysisResultRepository, never()).save(any(AnalysisResult.class));
+    }
+
+    @Test
+    void shouldExposePersistenceFailureWhenAnalysisCannotBeSaved() {
+        Long resumeId = 7L;
+        Resume resume = Resume.builder().id(resumeId).build();
+        AnalysisRequest request = new AnalysisRequest();
+        request.setAnalysisType("ATS");
+
+        when(resumeRepository.findById(resumeId)).thenReturn(Optional.of(resume));
+        when(analysisResultRepository.save(any(AnalysisResult.class)))
+                .thenThrow(new DataIntegrityViolationException("database unavailable"));
+
+        assertThatThrownBy(() -> analysisService.createAnalysis(resumeId, request))
+                .isInstanceOf(DBException.class)
+                .hasMessage("Unable to create analysis for resume: " + resumeId);
     }
 }
