@@ -349,37 +349,61 @@ def extract_docx_text(file_path: str) -> str:
     return "\n".join(paragraphs)
 
 
+
 def extract_text(file_path: str) -> str:
     """
     Extract text from PDF or DOCX.
 
-    PDF:
-        First attempts layout-aware extraction.
-        Falls back to pypdf if necessary.
-
-    DOCX:
-        Extracts non-empty paragraphs.
+    For PDFs, prefer layout-aware extraction only when its reading
+    order is reasonable. Otherwise, use the pypdf fallback.
+    For DOCX, extract non-empty paragraphs.
     """
 
     extension = Path(file_path).suffix.lower()
 
     if extension == ".pdf":
-
         try:
+            layout_text = extract_pdf_text_layout_aware(file_path)
 
-            text = extract_pdf_text_layout_aware(file_path)
+            if layout_text.strip():
+                # Detect headings incorrectly grouped at the start
+                # of the extracted text.
+                lines = [
+                    line.strip().lower()
+                    for line in layout_text.splitlines()
+                    if line.strip()
+                ]
 
-            if text.strip():
-                return text
+                section_headings = {
+                    "experience",
+                    "work experience",
+                    "professional experience",
+                    "skills",
+                    "technical skills",
+                    "education",
+                    "projects",
+                    "achievements",
+                    "certifications",
+                }
+
+                leading_headings = 0
+                for line in lines[:8]:
+                    if line in section_headings:
+                        leading_headings += 1
+                    else:
+                        break
+
+                # Several section headings appearing consecutively
+                # at the beginning usually indicates bad reading order.
+                if leading_headings < 3:
+                    return layout_text
 
         except Exception:
-
             pass
 
         return extract_pdf_text_fallback(file_path)
 
     if extension == ".docx":
-
         return extract_docx_text(file_path)
 
     raise ValueError(

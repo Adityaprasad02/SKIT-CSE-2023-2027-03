@@ -321,16 +321,16 @@ def calculate_project_relevance(
         "score": round(relevance_score, 2),
         "max_score": 10,
     }
+
 def calculate_education_match(
     candidate_education: list[str],
     education_requirements: list[str],
 ) -> dict:
     """
-    Compare candidate education with the education
-    requirements extracted from the job description.
+    Compare candidate education with job requirements.
 
-    Maximum:
-        5 points
+    Recognizes common bachelor's-degree terminology.
+    Maximum: 5 points.
     """
 
     candidate_text = " ".join(
@@ -341,7 +341,7 @@ def calculate_education_match(
     requirements = {
         item.strip().lower()
         for item in education_requirements
-        if item.strip()
+        if isinstance(item, str) and item.strip()
     }
 
     if not requirements:
@@ -353,30 +353,51 @@ def calculate_education_match(
             "max_score": 5,
         }
 
+    # Common terminology for bachelor's-level qualifications.
+    bachelor_terms = (
+        "bachelor",
+        "b.tech",
+        "btech",
+        "b.e.",
+        "b.e ",
+        "b.sc",
+        "bsc",
+        "bca",
+        "bachelor of technology",
+        "bachelor of engineering",
+        "undergraduate degree",
+    )
+
     matched = []
     missing = []
 
     for requirement in sorted(requirements):
+        is_bachelor_requirement = (
+            "bachelor" in requirement
+            or "undergraduate degree" in requirement
+        )
+
         if requirement in candidate_text:
+            matched.append(requirement)
+        elif (
+            is_bachelor_requirement
+            and any(term in candidate_text for term in bachelor_terms)
+        ):
             matched.append(requirement)
         else:
             missing.append(requirement)
 
-    percentage = (
-        len(matched) / len(requirements)
-    ) * 100
-
-    score = (
-        percentage / 100
-    ) * 5
+    percentage = len(matched) / len(requirements) * 100
+    score = round((percentage / 100) * 5, 2)
 
     return {
         "matched": matched,
         "missing": missing,
         "percentage": round(percentage, 2),
-        "score": round(score, 2),
+        "score": score,
         "max_score": 5,
     }
+
 def calculate_resume_completeness(
     candidate_profile: dict,
 ) -> dict:
@@ -584,4 +605,127 @@ def calculate_keyword_relevance(
         "percentage": round(percentage, 2),
         "score": round(score, 2),
         "max_score": 10,
+    }
+    
+def calculate_job_relevance(
+    candidate_profile: dict,
+    job_requirements: dict,
+    job_description: str,
+) -> dict:
+    """
+    Combine the existing scoring components into a
+    transparent 100-point job relevance score.
+    """
+
+    def section_text(section_name: str) -> list[str]:
+        value = candidate_profile.get(section_name, [])
+        if isinstance(value, str):
+            return [value] if value.strip() else []
+        if isinstance(value, list):
+            return [
+                item for item in value
+                if isinstance(item, str) and item.strip()
+            ]
+        return []
+
+    def text_from_profile() -> str:
+        parts = []
+        for value in candidate_profile.values():
+            if isinstance(value, str) and value.strip():
+                parts.append(value)
+            elif isinstance(value, list):
+                parts.extend(
+                    item for item in value
+                    if isinstance(item, str) and item.strip()
+                )
+        return "\n".join(parts)
+
+    candidate_skills = sorted(
+    extract_skills("\n".join(section_text("skills")))
+     )
+
+
+    required_skills = job_requirements.get(
+        "required_skills", []
+    )
+    preferred_skills = job_requirements.get(
+        "preferred_skills", []
+    )
+
+    skill_result = calculate_skill_match(
+        candidate_skills,
+        required_skills,
+        preferred_skills,
+    )
+
+    experience_result = calculate_context_relevance(
+        section_text("experience"),
+        required_skills,
+        preferred_skills,
+    )
+
+    project_result = calculate_project_relevance(
+        section_text("projects"),
+        required_skills,
+        preferred_skills,
+    )
+
+    education_result = calculate_education_match(
+        section_text("education"),
+        job_requirements.get("education_requirements", []),
+    )
+
+    completeness_result = calculate_resume_completeness(
+        candidate_profile
+    )
+
+    keyword_result = calculate_keyword_relevance(
+        text_from_profile(),
+        job_description,
+    )
+
+    components = {
+        "required_skills": skill_result["required"]["score"],
+        "preferred_skills": skill_result["preferred"]["score"],
+        "experience_relevance": experience_result["score"],
+        "project_relevance": project_result["score"],
+        "education_match": education_result["score"],
+        "resume_completeness": completeness_result["score"],
+        "keyword_relevance": keyword_result["score"],
+    }
+
+    total_score = round(sum(components.values()), 2)
+
+    if total_score >= 80:
+        category = "Excellent Match"
+    elif total_score >= 60:
+        category = "Good Match"
+    elif total_score >= 40:
+        category = "Moderate Match"
+    else:
+        category = "Low Match"
+
+    return {
+        "job_relevance_score": total_score,
+        "max_score": 100,
+        "match_category": category,
+        "components": components,
+        "skill_match": skill_result,
+        "experience_relevance": experience_result,
+        "project_relevance": project_result,
+        "education_match": education_result,
+        "resume_completeness": completeness_result,
+        "keyword_relevance": keyword_result,
+        "recommendations": {
+            "missing_required_skills":
+                skill_result["required"]["missing"],
+            "related_required_skills":
+                skill_result["required"]["related"],
+            "missing_preferred_skills":
+                skill_result["preferred"]["missing"],
+            "missing_resume_sections":
+                completeness_result["missing_sections"],
+            "missing_keywords":
+                keyword_result["missing"],
+        },
     }

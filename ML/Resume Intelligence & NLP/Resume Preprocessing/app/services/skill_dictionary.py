@@ -73,6 +73,41 @@ SKILL_ALIASES = {
     "kotlin": {
         "kotlin",
     },
+    
+    "android": {
+        "android",
+        "android development",
+        "android sdk",
+    },
+
+    "mvvm": {
+        "mvvm",
+        "model-view-viewmodel",
+        "model view viewmodel",
+    },
+
+    "mvc": {
+        "mvc",
+        "model-view-controller",
+        "model view controller",
+    },
+
+    "coroutines": {
+        "coroutines",
+        "kotlin coroutines",
+    },
+
+    "retrofit": {
+        "retrofit",
+        "retrofit api",
+        "retrofit apis",
+    },
+
+    "navigation component": {
+        "navigation component",
+        "android navigation component",
+    },
+
 
     "swift": {
         "swift",
