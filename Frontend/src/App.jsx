@@ -14,6 +14,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import DashboardPlaceholder from "./pages/DashboardPlaceholder";
+import ResumeUpload from "./pages/ResumeUpload";
 
 function App() {
   return (
@@ -39,8 +40,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route
-            path="/dashboard/resumes"
-            element={<DashboardPlaceholder />}
+             path="/dashboard/resumes"
+            element={<ResumeUpload />}
           />
 
           <Route
