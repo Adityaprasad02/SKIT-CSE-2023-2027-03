@@ -24,7 +24,15 @@ def process_resume(file_path: str) -> dict:
     contact = extract_contact_information(cleaned_text)
 
     # Extract skills
-    skills = extract_skills(sections["skills"])
+    
+    
+    skills = {
+    "technical": sorted(
+        extract_skills(cleaned_text)
+      )
+      }
+
+
 
     # Build structured resume
     resume_data = {

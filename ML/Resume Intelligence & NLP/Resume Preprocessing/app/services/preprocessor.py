@@ -1,54 +1,49 @@
+
 import re
-
-
-def clean_text(text: str) -> str:
-    """
-    Clean and normalize extracted resume text.
-    """
-
-    # Normalize line breaks
-    text = text.replace("\r\n", "\n")
-    text = text.replace("\r", "\n")
-
-    # Fix words broken across PDF line breaks.
-    # Example: "latency re-\nduction" -> "latency reduction"
-    text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)
-
-    # Replace bullet characters with a normal space
-    text = text.replace("•", " ")
-
-    # Normalize tabs and multiple spaces
-    text = re.sub(r"[ \t]+", " ", text)
-
-    # Remove unnecessary spaces around line breaks
-    text = re.sub(r" *\n *", "\n", text)
-
-    # Reduce excessive blank lines
-    text = re.sub(r"\n{3,}", "\n\n", text)
-
-    # Keep useful resume characters:
-    # letters, numbers, spaces, and common punctuation
-    text = re.sub(
-        r"[^\w\s@.+#&()/,%:'\-]",
-        "",
-        text
-    )
-
-    # Remove spaces at the beginning and end of each line
-    lines = [line.strip() for line in text.split("\n")]
-
-    # Remove completely empty lines
-    lines = [line for line in lines if line]
-
-    return "\n".join(lines)
+import unicodedata
 
 
 def preprocess_resume(text: str) -> str:
     """
-    Complete resume preprocessing pipeline.
+    Clean extracted resume text while preserving section
+    headings, line breaks, and meaningful content.
+
+    This function does not extract text from files;
+    that responsibility belongs to parser.py.
     """
 
-    if not text or not text.strip():
+    if not isinstance(text, str):
+        raise TypeError("Resume text must be a string.")
+
+    if not text.strip():
         return ""
 
-    return clean_text(text)
+    # Normalize Unicode characters.
+    text = unicodedata.normalize("NFKC", text)
+
+    # Normalize common line-ending formats.
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+
+    # Remove null bytes and other control characters,
+    # while preserving newlines and tabs.
+    text = "".join(
+        char
+        for char in text
+        if char in "\n\t" or unicodedata.category(char)[0] != "C"
+    )
+
+    cleaned_lines = []
+
+    for line in text.split("\n"):
+        # Replace tabs with spaces.
+        line = line.replace("\t", " ")
+
+        # Normalize repeated whitespace within a line.
+        line = re.sub(r"[ ]+", " ", line).strip()
+
+        # Preserve non-empty lines, including headings.
+        if line:
+            cleaned_lines.append(line)
+
+    # Use one newline between lines and remove leading/trailing space.
+    return "\n".join(cleaned_lines).strip()

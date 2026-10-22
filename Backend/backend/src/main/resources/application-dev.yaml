@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - openid
+              - profile
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: ${JWT_ISSUER}
+    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+    refresh-token-cookie-name: ${JWT_REFRESH_TOKEN_COOKIE_NAME}
+    cookie-secure: ${JWT_COOKIE_SECURE}
+    cookie-http-only: ${JWT_COOKIE_HTTP_ONLY}
+    cookie-same-site: ${JWT_COOKIE_SAME_SITE}
+   # cookie-domain:  #put frontend url here

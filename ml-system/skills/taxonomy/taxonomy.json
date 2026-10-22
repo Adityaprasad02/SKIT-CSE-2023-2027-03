@@ -1,0 +1,129 @@
+{
+  "skills": [
+    {
+      "id": "python",
+      "name": "Python",
+      "category": "programming",
+      "subcategory": "programming_language",
+      "parent_id": null,
+      "aliases": [
+        "python3",
+        "python 3"
+      ]
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "category": "programming",
+      "subcategory": "programming_language",
+      "parent_id": null,
+      "aliases": [
+        "cpp",
+        "c plus plus"
+      ]
+    },
+    {
+      "id": "javascript",
+      "name": "JavaScript",
+      "category": "programming",
+      "subcategory": "programming_language",
+      "parent_id": null,
+      "aliases": [
+        "js",
+        "ecmascript"
+      ]
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "category": "web_development",
+      "subcategory": "frontend",
+      "parent_id": null,
+      "aliases": [
+        "reactjs",
+        "react.js"
+      ]
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js",
+      "category": "web_development",
+      "subcategory": "backend",
+      "parent_id": null,
+      "aliases": [
+        "node",
+        "nodejs"
+      ]
+    },
+    {
+      "id": "machine_learning",
+      "name": "Machine Learning",
+      "category": "artificial_intelligence",
+      "subcategory": "machine_learning",
+      "parent_id": null,
+      "aliases": [
+        "ml"
+      ]
+    },
+    {
+      "id": "deep_learning",
+      "name": "Deep Learning",
+      "category": "artificial_intelligence",
+      "subcategory": "deep_learning",
+      "parent_id": "machine_learning",
+      "aliases": [
+        "dl"
+      ]
+    },
+    {
+      "id": "pytorch",
+      "name": "PyTorch",
+      "category": "artificial_intelligence",
+      "subcategory": "deep_learning_framework",
+      "parent_id": "deep_learning",
+      "aliases": [
+        "torch"
+      ]
+    },
+    {
+      "id": "tensorflow",
+      "name": "TensorFlow",
+      "category": "artificial_intelligence",
+      "subcategory": "deep_learning_framework",
+      "parent_id": "deep_learning",
+      "aliases": [
+        "tf"
+      ]
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "category": "devops",
+      "subcategory": "containerization",
+      "parent_id": null,
+      "aliases": [
+        "docker containers"
+      ]
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "category": "devops",
+      "subcategory": "container_orchestration",
+      "parent_id": null,
+      "aliases": [
+        "k8s"
+      ]
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "category": "development_tools",
+      "subcategory": "version_control",
+      "parent_id": null,
+      "aliases": [
+        "git scm"
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 ﻿"""
+"""
 Canonical skill definitions used by the resume
 and job-description matching system.
 
@@ -74,6 +75,7 @@ SKILL_ALIASES = {
         "kotlin",
     },
 
+    
     "android": {
         "android",
         "android development",
@@ -517,4 +519,5 @@ RELATED_SKILLS = {
         "opencv",
         "deep learning",
     },
+}
 }
