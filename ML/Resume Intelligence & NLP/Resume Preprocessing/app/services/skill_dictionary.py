@@ -1,4 +1,4 @@
-"""
+﻿"""
 Canonical skill definitions used by the resume
 and job-description matching system.
 
@@ -73,7 +73,7 @@ SKILL_ALIASES = {
     "kotlin": {
         "kotlin",
     },
-    
+
     "android": {
         "android",
         "android development",
@@ -475,6 +475,15 @@ SKILL_ALIASES = {
     },
 }
 RELATED_SKILLS = {
+    "spring boot": {"java", "rest api"},
+    "docker": {"aws", "ci/cd"},
+    "aws": {"docker", "microsoft azure"},
+    "mysql": {"sql"},
+    "react": {"javascript", "html", "css"},
+    "node.js": {"javascript", "rest api"},
+    "android": {"kotlin", "java", "mvvm", "retrofit"},
+    "mvvm": {"mvc"},
+    "microsoft azure": {"aws", "docker"},
     "sql": {
         "mysql",
         "postgresql",
