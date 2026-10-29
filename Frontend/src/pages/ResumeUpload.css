@@ -460,3 +460,195 @@
       height: 40px;
     }
   }
+
+
+
+/* Saved resumes - Step 12 */
+.saved-resumes-section {
+    margin-top: 28px;
+    padding: 24px;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 16px;
+  }
+
+  .saved-resumes-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .saved-resumes-heading h2 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+  }
+
+  .saved-resumes-heading p {
+    margin: 0;
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.9rem;
+  }
+
+  .saved-resumes-count {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-weight: 700;
+  }
+
+  .saved-resumes-empty {
+    display: flex;
+    min-height: 180px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px;
+    text-align: center;
+    border: 1px dashed var(--border-color, #d1d5db);
+    border-radius: 12px;
+  }
+
+  .saved-resumes-empty h3 {
+    margin: 14px 0 6px;
+    font-size: 1rem;
+  }
+
+  .saved-resumes-empty p {
+    margin: 0;
+    max-width: 420px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .saved-resumes-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .saved-resume-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .saved-resume-item:hover {
+    border-color: #c7d2fe;
+    background: #fafaff;
+  }
+
+  .saved-resume-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  .saved-resume-details > strong {
+    overflow: hidden;
+    color: var(--text-primary, #111827);
+    font-size: 0.95rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .saved-resume-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.8rem;
+  }
+
+  .saved-resume-meta > span:last-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .saved-resume-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #15803d;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .saved-resume-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .saved-resume-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 9px;
+    background: #ffffff;
+    color: var(--text-primary, #374151);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .saved-resume-view:hover {
+    border-color: #a5b4fc;
+    background: #eef2ff;
+  }
+
+  .saved-resume-view:focus-visible,
+  .saved-resume-actions button:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 3px;
+  }
+
+  .saved-resume-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 600px) {
+    .saved-resumes-section {
+      padding: 16px;
+    }
+
+    .saved-resume-item {
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 13px;
+    }
+
+    .saved-resume-details {
+      flex-basis: calc(100% - 60px);
+    }
+
+    .saved-resume-actions {
+      width: 100%;
+      justify-content: flex-end;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+  }
