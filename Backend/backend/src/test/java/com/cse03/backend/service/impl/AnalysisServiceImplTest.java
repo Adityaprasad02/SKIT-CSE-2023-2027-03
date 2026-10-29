@@ -111,4 +111,16 @@ class AnalysisServiceImplTest {
                 .isInstanceOf(DBException.class)
                 .hasMessage("Unable to fetch analyses for resume: " + resumeId);
     }
+
+    @Test
+    void shouldExposePersistenceFailureWhenAnalysisCannotBeFetchedById() {
+        Long analysisId = 11L;
+
+        when(analysisResultRepository.findById(analysisId))
+                .thenThrow(new DataIntegrityViolationException("database unavailable"));
+
+        assertThatThrownBy(() -> analysisService.getAnalysisById(analysisId))
+                .isInstanceOf(DBException.class)
+                .hasMessage("Unable to fetch analysis with id: " + analysisId);
+    }
 }

@@ -56,13 +56,17 @@ public class AnalysisServiceImpl implements AnalysisService {
     @Override
     public AnalysisResponse getAnalysisById(Long id) {
 
-        AnalysisResult analysis =
-                analysisResultRepository.findById(id)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Analysis not found with id: " + id
-                                )
-                        );
+        AnalysisResult analysis;
+        try {
+            analysis = analysisResultRepository.findById(id)
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(
+                                    "Analysis not found with id: " + id
+                            )
+                    );
+        } catch (DataAccessException exception) {
+            throw new DBException("Unable to fetch analysis with id: " + id);
+        }
 
         return toResponse(analysis);
     }
