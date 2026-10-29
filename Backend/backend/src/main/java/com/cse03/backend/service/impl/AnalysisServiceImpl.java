@@ -71,17 +71,21 @@ public class AnalysisServiceImpl implements AnalysisService {
     public List<AnalysisResponse> getAnalysesByResume(
             Long resumeId) {
 
-        if (!resumeRepository.existsById(resumeId)) {
-            throw new ResourceNotFoundException(
-                    "Resume not found with id: " + resumeId
-            );
-        }
+        try {
+            if (!resumeRepository.existsById(resumeId)) {
+                throw new ResourceNotFoundException(
+                        "Resume not found with id: " + resumeId
+                );
+            }
 
-        return analysisResultRepository
-                .findByResumeId(resumeId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+            return analysisResultRepository
+                    .findByResumeId(resumeId)
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
+        } catch (DataAccessException exception) {
+            throw new DBException("Unable to fetch analyses for resume: " + resumeId);
+        }
     }
 
     private AnalysisResponse toResponse(

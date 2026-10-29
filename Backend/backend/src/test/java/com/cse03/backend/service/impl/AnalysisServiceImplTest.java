@@ -98,4 +98,17 @@ class AnalysisServiceImplTest {
                 .isInstanceOf(DBException.class)
                 .hasMessage("Unable to create analysis for resume: " + resumeId);
     }
+
+    @Test
+    void shouldExposePersistenceFailureWhenAnalysesCannotBeFetched() {
+        Long resumeId = 7L;
+
+        when(resumeRepository.existsById(resumeId)).thenReturn(true);
+        when(analysisResultRepository.findByResumeId(resumeId))
+                .thenThrow(new DataIntegrityViolationException("database unavailable"));
+
+        assertThatThrownBy(() -> analysisService.getAnalysesByResume(resumeId))
+                .isInstanceOf(DBException.class)
+                .hasMessage("Unable to fetch analyses for resume: " + resumeId);
+    }
 }
