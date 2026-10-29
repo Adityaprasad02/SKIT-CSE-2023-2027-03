@@ -17,6 +17,8 @@ public class AnalysisResponse {
 
     private Long resumeId;
 
+    private String analysisType;
+
     private Double atsScore;
 
     private Double grammarScore;

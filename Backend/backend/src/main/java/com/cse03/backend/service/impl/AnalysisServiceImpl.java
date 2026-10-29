@@ -38,6 +38,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
         AnalysisResult analysis = AnalysisResult.builder()
                 .resume(resume)
+                .analysisType(request.getAnalysisType())
                 .status(AnalysisStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -89,6 +90,7 @@ public class AnalysisServiceImpl implements AnalysisService {
         return AnalysisResponse.builder()
                 .id(analysis.getId())
                 .resumeId(analysis.getResume().getId())
+                .analysisType(analysis.getAnalysisType())
                 .atsScore(analysis.getAtsScore())
                 .grammarScore(analysis.getGrammarScore())
                 .structureScore(analysis.getStructureScore())

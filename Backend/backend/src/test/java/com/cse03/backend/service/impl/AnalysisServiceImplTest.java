@@ -61,9 +61,11 @@ class AnalysisServiceImplTest {
         AnalysisResult persisted = analysisCaptor.getValue();
 
         assertThat(persisted.getResume()).isSameAs(resume);
+        assertThat(persisted.getAnalysisType()).isEqualTo("ATS");
         assertThat(persisted.getStatus()).isEqualTo(AnalysisStatus.PENDING);
         assertThat(response.getId()).isEqualTo(11L);
         assertThat(response.getResumeId()).isEqualTo(resumeId);
+        assertThat(response.getAnalysisType()).isEqualTo("ATS");
     }
 
     @Test
