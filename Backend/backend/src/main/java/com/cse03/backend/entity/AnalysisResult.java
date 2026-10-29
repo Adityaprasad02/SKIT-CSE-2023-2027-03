@@ -22,6 +22,8 @@ public class AnalysisResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String analysisType;
+
     private Double atsScore;
 
     private Double grammarScore;

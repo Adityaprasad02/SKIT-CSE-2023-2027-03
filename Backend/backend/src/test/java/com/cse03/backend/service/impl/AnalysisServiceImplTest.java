@@ -61,9 +61,11 @@ class AnalysisServiceImplTest {
         AnalysisResult persisted = analysisCaptor.getValue();
 
         assertThat(persisted.getResume()).isSameAs(resume);
+        assertThat(persisted.getAnalysisType()).isEqualTo("ATS");
         assertThat(persisted.getStatus()).isEqualTo(AnalysisStatus.PENDING);
         assertThat(response.getId()).isEqualTo(11L);
         assertThat(response.getResumeId()).isEqualTo(resumeId);
+        assertThat(response.getAnalysisType()).isEqualTo("ATS");
     }
 
     @Test
@@ -95,5 +97,18 @@ class AnalysisServiceImplTest {
         assertThatThrownBy(() -> analysisService.createAnalysis(resumeId, request))
                 .isInstanceOf(DBException.class)
                 .hasMessage("Unable to create analysis for resume: " + resumeId);
+    }
+
+    @Test
+    void shouldExposePersistenceFailureWhenAnalysesCannotBeFetched() {
+        Long resumeId = 7L;
+
+        when(resumeRepository.existsById(resumeId)).thenReturn(true);
+        when(analysisResultRepository.findByResumeId(resumeId))
+                .thenThrow(new DataIntegrityViolationException("database unavailable"));
+
+        assertThatThrownBy(() -> analysisService.getAnalysesByResume(resumeId))
+                .isInstanceOf(DBException.class)
+                .hasMessage("Unable to fetch analyses for resume: " + resumeId);
     }
 }
