@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import DashboardPlaceholder from "./pages/DashboardPlaceholder";
 import ResumeUpload from "./pages/ResumeUpload";
+import JobMatching from "./pages/JobMatching";
 
 function App() {
   return (
@@ -46,7 +47,7 @@ function App() {
 
           <Route
             path="/dashboard/job-matching"
-            element={<DashboardPlaceholder />}
+            element={<JobMatching />}
           />
 
           <Route
