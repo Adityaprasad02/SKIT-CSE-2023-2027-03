@@ -115,6 +115,24 @@ def test_extract_duplicate_linkedin():
     ]
 
 
+def test_infer_linkedin_and_github_from_name_when_missing():
+
+    text = """
+    ADITYA SINGH JADOUN
+    adityasinghjadoun17@gmail.com
+    +91 7062425403
+    """
+
+    result = extract_contact_info(text)
+
+    assert result.linkedin == [
+        "linkedin.com/in/adityasingh"
+    ]
+    assert result.github == [
+        "github.com/adityasingh"
+    ]
+
+
 # =========================================
 # GitHub Tests
 # =========================================
