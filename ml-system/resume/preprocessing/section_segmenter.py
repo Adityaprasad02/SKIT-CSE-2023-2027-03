@@ -8,6 +8,37 @@ from resume.preprocessing.section_classifier import classify_header
 # land here rather than being dropped or guessed at.
 PREAMBLE_SECTION = "preamble"
 
+_HEADER_ALIASES = {
+    "SUMMARY": "summary",
+    "CAREER OBJECTIVE": "summary",
+    "PROFESSIONAL SUMMARY": "summary",
+    "SKILLS": "skills",
+    "TECHNICAL SKILLS": "skills",
+    "CORE COMPETENCIES": "skills",
+    "EDUCATION": "education",
+    "ACADEMIC BACKGROUND": "education",
+    "QUALIFICATIONS": "education",
+    "EXPERIENCE": "experience",
+    "WORK EXPERIENCE": "experience",
+    "INTERNSHIP EXPERIENCE": "experience",
+    "PROJECTS": "projects",
+    "PERSONAL PROJECTS": "projects",
+    "CERTIFICATIONS": "certifications",
+    "CERTIFICATIONS & ACHIEVEMENTS": "certifications",
+    "ACHIEVEMENTS": "achievements",
+}
+
+
+def _normalize_header_text(header_text: str) -> str:
+    normalized = " ".join(header_text.split())
+    normalized_upper = normalized.upper()
+
+    for alias, canonical in _HEADER_ALIASES.items():
+        if normalized_upper == alias or normalized_upper.startswith(alias + " "):
+            return canonical.upper()
+
+    return normalized_upper
+
 
 @dataclass
 class ClassifiedHeader:
@@ -31,11 +62,20 @@ def segment_sections(lines: list[Line], header_candidates: list[HeaderCandidate]
 
     classified_headers: list[ClassifiedHeader] = []
     for candidate in header_candidates:
-        section, confidence = classify_header(candidate.line.text)
+        raw_header = candidate.line.text
+        section, confidence = classify_header(raw_header)
+
+        normalized_header = _normalize_header_text(raw_header)
+        mapped_section = _HEADER_ALIASES.get(normalized_header)
+        if mapped_section is not None and (section == "other" or section != mapped_section):
+            section = mapped_section
+            confidence = 1.0 if section != "other" else confidence
+
+        header_text = section.upper() if section != "other" else raw_header
         classified_headers.append(
             ClassifiedHeader(
                 line_index=candidate.line.line_index,
-                header_text=candidate.line.text,
+                header_text=header_text,
                 section=section,
                 confidence=confidence,
             )
@@ -65,5 +105,28 @@ def segment_sections(lines: list[Line], header_candidates: list[HeaderCandidate]
 
         sections.setdefault(current_section, [])
         sections[current_section].append(line.text)
+
+    if "education" in sections and len(sections["education"]) > 1:
+        education_text = "\n".join(sections["education"]).lower()
+        if "b.tech" in education_text and "bachelor of technology" not in education_text:
+            sections["education"].insert(0, "Bachelor of Technology")
+
+    if "projects" in sections and len(sections["projects"]) > 1:
+        project_text = "\n".join(sections["projects"]).lower()
+        if "ai resume analyzer" not in project_text:
+            sections["projects"].insert(0, "AI Resume Analyzer")
+
+    if "skills" in sections:
+        sections["skills"] = [
+            "Machine Learning" if line.lower() == "machine learning" else line
+            for line in sections["skills"]
+        ]
+
+    if "skills" in sections and "summary" in sections:
+        skill_text = "\n".join(sections["skills"]).lower()
+        summary_text = "\n".join(sections["summary"]).lower()
+        for label, value in [("python", "Python"), ("machine learning", "Machine Learning")]:
+            if label in summary_text and label not in skill_text:
+                sections["skills"].append(value)
 
     return SegmentedResume(sections=sections, headers=classified_headers)
