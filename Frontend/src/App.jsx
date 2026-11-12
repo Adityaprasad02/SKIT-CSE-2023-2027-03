@@ -13,9 +13,9 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
-import DashboardPlaceholder from "./pages/DashboardPlaceholder";
 import ResumeUpload from "./pages/ResumeUpload";
 import JobMatching from "./pages/JobMatching";
+import MyAccount from "./pages/MyAccount";
 
 function App() {
   return (
@@ -52,7 +52,7 @@ function App() {
 
           <Route
             path="/dashboard/account"
-            element={<DashboardPlaceholder />}
+            element={<MyAccount />}
           />
         </Route>
       </Routes>
