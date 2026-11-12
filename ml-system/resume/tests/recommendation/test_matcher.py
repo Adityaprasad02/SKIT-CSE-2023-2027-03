@@ -91,6 +91,19 @@ def test_parser_defaults_unmarked_skills_to_required_and_deduplicates():
     assert [skill.skill_id for skill in requirements.preferred_skills] == ["docker"]
 
 
+def test_parser_handles_required_and_preferred_markers_on_the_same_line():
+    resolver, taxonomy = create_resolver()
+
+    requirements = parse_job_description(
+        "Required: Python. Preferred: PyTorch and Docker",
+        resolver,
+        taxonomy,
+    )
+
+    assert [skill.skill_id for skill in requirements.required_skills] == ["python"]
+    assert [skill.skill_id for skill in requirements.preferred_skills] == ["pytorch", "docker"]
+
+
 def test_match_without_job_skills_has_zero_score():
     resolver, taxonomy = create_resolver()
 
