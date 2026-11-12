@@ -2,6 +2,7 @@ package com.cse03.backend.service;
 
 import com.cse03.backend.dto.request.AnalysisRequest;
 import com.cse03.backend.dto.response.AnalysisResponse;
+import com.cse03.backend.entity.enums.AnalysisStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface AnalysisService {
     AnalysisResponse getAnalysisById(Long id);
 
     List<AnalysisResponse> getAnalysesByResume(Long resumeId);
+
+    AnalysisResponse updateStatus(Long id, AnalysisStatus status);
 }

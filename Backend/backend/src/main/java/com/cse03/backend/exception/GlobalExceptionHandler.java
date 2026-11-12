@@ -50,4 +50,10 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleDenialExceptions(DenialException e){
 		return new ResponseEntity<>( Map.of( "error" , e.getMessage()) , HttpStatus.BAD_REQUEST) ;
 	}
+
+	@ExceptionHandler(InvalidStateException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidState(InvalidStateException exception) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(ErrorResponse.of(HttpStatus.CONFLICT.value(), exception.getMessage()));
+	}
 }

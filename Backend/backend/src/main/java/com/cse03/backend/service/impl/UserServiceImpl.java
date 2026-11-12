@@ -16,47 +16,44 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-	public UserServiceImpl(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-	private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12) ;
+    @Override
+    @Transactional
+    public ResponseSignUp createUser(RequestSignUp requestSignUp) throws DBException {
+        String email = requestSignUp.email();
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new DBException("exist with email : " + email);
+        }
 
-	@Override
-	@Transactional
-	public ResponseSignUp createUser(RequestSignUp requestSignUp) throws DBException {
-		String name = requestSignUp.name();
-		String email = requestSignUp.email();
-		LoginAuthProvider loginAuthProvider = requestSignUp.loginAuthProvider();
-		String username = requestSignUp.username();
-		String password = requestSignUp.password();
+        LoginAuthProvider provider = requestSignUp.loginAuthProvider();
+        User user = User.builder()
+                .name(requestSignUp.name())
+                .email(email)
+                .username(requestSignUp.username())
+                .password(provider == LoginAuthProvider.GOOGLE
+                        ? null
+                        : encoder.encode(requestSignUp.password()))
+                .loginAuthProvider(provider)
+                .build();
 
-		if (userRepository.findByEmail(email).isPresent()) {
-			throw new DBException("exist with email : " + email);
-		}
-		User user = User
-			.builder()
-			.name(name)
-			.email(email)
-			.username(username)
-			.password(password==null ? null : encoder.encode(password))
-			.loginAuthProvider(loginAuthProvider)
-			.build();
+        User saved = userRepository.save(user);
+        return new ResponseSignUp(
+                saved.getId(),
+                saved.getName(),
+                saved.getUsername(),
+                saved.getEmail(),
+                saved.getLoginAuthProvider()
+        );
+    }
 
-		User save = userRepository.save(user);
-		return new ResponseSignUp(
-			save.getId(),
-			save.getName(),
-			save.getUsername(),
-			save.getEmail(),
-			save.getLoginAuthProvider()
-		);
-	}
-
-	@Override
-	public Optional<User> findByEmail(String email) {
-		return userRepository.findByEmail(email);
-	}
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

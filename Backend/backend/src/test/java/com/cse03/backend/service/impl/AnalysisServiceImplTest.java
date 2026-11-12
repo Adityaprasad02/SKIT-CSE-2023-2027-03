@@ -5,6 +5,7 @@ import com.cse03.backend.dto.response.AnalysisResponse;
 import com.cse03.backend.entity.AnalysisResult;
 import com.cse03.backend.entity.Resume;
 import com.cse03.backend.entity.enums.AnalysisStatus;
+import com.cse03.backend.exception.InvalidStateException;
 import com.cse03.backend.exception.DBException;
 import com.cse03.backend.exception.ResourceNotFoundException;
 import com.cse03.backend.repository.AnalysisResultRepository;
@@ -103,7 +104,8 @@ class AnalysisServiceImplTest {
     void shouldExposePersistenceFailureWhenAnalysesCannotBeFetched() {
         Long resumeId = 7L;
 
-        when(resumeRepository.existsById(resumeId)).thenReturn(true);
+        when(resumeRepository.findById(resumeId))
+                .thenReturn(Optional.of(Resume.builder().id(resumeId).build()));
         when(analysisResultRepository.findByResumeId(resumeId))
                 .thenThrow(new DataIntegrityViolationException("database unavailable"));
 
@@ -122,5 +124,35 @@ class AnalysisServiceImplTest {
         assertThatThrownBy(() -> analysisService.getAnalysisById(analysisId))
                 .isInstanceOf(DBException.class)
                 .hasMessage("Unable to fetch analysis with id: " + analysisId);
+    }
+
+    @Test
+    void shouldAllowProcessingLifecycleTransitions() {
+        AnalysisResult analysis = AnalysisResult.builder()
+                .id(11L)
+                .resume(Resume.builder().id(7L).build())
+                .status(AnalysisStatus.PENDING)
+                .build();
+        when(analysisResultRepository.findById(11L)).thenReturn(Optional.of(analysis));
+        when(analysisResultRepository.save(analysis)).thenReturn(analysis);
+
+        AnalysisResponse response =
+                analysisService.updateStatus(11L, AnalysisStatus.PROCESSING);
+
+        assertThat(response.getStatus()).isEqualTo(AnalysisStatus.PROCESSING);
+        verify(analysisResultRepository).save(analysis);
+    }
+
+    @Test
+    void shouldRejectInvalidProcessingLifecycleTransition() {
+        AnalysisResult analysis = AnalysisResult.builder()
+                .id(11L)
+                .resume(Resume.builder().id(7L).build())
+                .status(AnalysisStatus.PENDING)
+                .build();
+        when(analysisResultRepository.findById(11L)).thenReturn(Optional.of(analysis));
+
+        assertThatThrownBy(() -> analysisService.updateStatus(11L, AnalysisStatus.COMPLETED))
+                .isInstanceOf(InvalidStateException.class);
     }
 }
