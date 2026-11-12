@@ -35,4 +35,16 @@ public class ResumeController {
 	public ResponseEntity<ResumeResponse> getById(@PathVariable Long id) {
 		return ResponseEntity.ok(resumeService.getResumeById(id));
 	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<ResumeResponse> update(@PathVariable Long id,
+			@Valid @RequestBody ResumeRequest request) {
+		return ResponseEntity.ok(resumeService.updateResume(id, request));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		resumeService.deleteResume(id);
+		return ResponseEntity.noContent().build();
+	}
 }

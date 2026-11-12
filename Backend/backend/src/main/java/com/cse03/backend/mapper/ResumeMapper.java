@@ -4,7 +4,18 @@ import com.cse03.backend.dto.response.ResumeResponse;
 import com.cse03.backend.entity.Resume;
 
 public class ResumeMapper {
-    ResumeResponse toResponse(Resume resume) {
-        return null;
+    private ResumeMapper() {
+    }
+
+    public static ResumeResponse toResponse(Resume resume) {
+        return ResumeResponse.builder()
+                .id(resume.getId())
+                .title(resume.getFileName())
+                .candidateName(resume.getCandidateName())
+                .fileName(resume.getFileName())
+                .filePath(resume.getFilePath())
+                .status(resume.getStatus())
+                .uploadedAt(resume.getUploadedAt())
+                .build();
     }
 }

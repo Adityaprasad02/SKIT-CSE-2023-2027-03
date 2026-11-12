@@ -11,6 +11,8 @@ public interface AnalysisResultRepository
         extends JpaRepository<AnalysisResult, Long> {
 
     List<AnalysisResult> findByResumeId(Long resumeId);
+
+    void deleteByResumeId(Long resumeId);
 }
 
 

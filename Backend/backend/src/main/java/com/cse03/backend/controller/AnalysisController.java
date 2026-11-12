@@ -2,6 +2,7 @@ package com.cse03.backend.controller;
 
 
 import com.cse03.backend.dto.request.AnalysisRequest;
+import com.cse03.backend.dto.request.AnalysisStatusRequest;
 import com.cse03.backend.dto.response.AnalysisResponse;
 import com.cse03.backend.dto.response.ApiResponse;
 import com.cse03.backend.service.AnalysisService;
@@ -67,6 +68,14 @@ public class AnalysisController {
                         responses
                 )
         );
+    }
+
+    @PatchMapping("/analyses/{id}/status")
+    public ResponseEntity<ApiResponse<AnalysisResponse>> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody AnalysisStatusRequest request) {
+        AnalysisResponse response = analysisService.updateStatus(id, request.getStatus());
+        return ResponseEntity.ok(ApiResponse.success("Analysis status updated successfully", response));
     }
     
 }
