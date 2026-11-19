@@ -13,12 +13,13 @@ import com.cse03.backend.repository.ResumeRepository;
 import com.cse03.backend.repository.UserRepository;
 import com.cse03.backend.service.ResumeService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,12 +60,13 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional
-    public List<ResumeResponse> getAllResumes() {
+    public Page<ResumeResponse> getAllResumes(Pageable pageable) {
         User owner = currentUser();
-        List<Resume> resumes = owner == null
-                ? resumeRepository.findAll()
-                : resumeRepository.findByOwnerIdOrderByUploadedAtDesc(owner.getId());
-        return resumes.stream().map(ResumeMapper::toResponse).toList();
+        if (owner == null) {
+            return Page.empty(pageable);
+        }
+        return resumeRepository.findByOwnerId(owner.getId(), pageable)
+                .map(ResumeMapper::toResponse);
     }
 
     @Override
@@ -90,8 +92,8 @@ public class ResumeServiceImpl implements ResumeService {
         Resume resume = resumeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found with id: " + id));
         User owner = currentUser();
-        if (owner != null && resume.getOwner() != null
-                && !owner.getId().equals(resume.getOwner().getId())) {
+        if (owner != null && (resume.getOwner() == null
+                || !owner.getId().equals(resume.getOwner().getId()))) {
             throw new ResourceNotFoundException("Resume not found with id: " + id);
         }
         return resume;

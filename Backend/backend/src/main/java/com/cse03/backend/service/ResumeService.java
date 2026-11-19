@@ -2,11 +2,8 @@ package com.cse03.backend.service;
 
 import com.cse03.backend.dto.request.ResumeRequest;
 import com.cse03.backend.dto.response.ResumeResponse;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ResumeService {
 
@@ -14,7 +11,7 @@ public interface ResumeService {
 
     ResumeResponse getResumeById(Long id);
 
-    List<ResumeResponse> getAllResumes();
+    Page<ResumeResponse> getAllResumes(Pageable pageable);
 
     ResumeResponse updateResume(Long id, ResumeRequest request);
 
