@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,6 +32,18 @@ public class GlobalExceptionHandler {
 
 		ErrorResponse response = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), message);
 
+		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
+		ErrorResponse response = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException exception) {
+		ErrorResponse response = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
 		return ResponseEntity.badRequest().body(response);
 	}
 
