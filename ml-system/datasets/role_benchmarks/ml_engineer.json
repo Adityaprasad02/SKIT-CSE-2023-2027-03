@@ -1,0 +1,29 @@
+{
+  "benchmark_id": "machine-learning-engineer-v1",
+  "role": "Machine Learning Engineer",
+  "company": null,
+  "source": "ml-system",
+  "description": "General machine learning engineering skill benchmark.",
+  "version": 1,
+  "required_skills": [
+    {
+      "skill_id": "python",
+      "importance": 1.0,
+      "required": true,
+      "required_level": "advanced"
+    },
+    {
+      "skill_id": "machine_learning",
+      "importance": 0.95,
+      "required": true,
+      "required_level": "advanced"
+    },
+    {
+      "skill_id": "pytorch",
+      "importance": 0.75,
+      "required": false,
+      "required_level": "intermediate"
+    }
+  ],
+  "metadata": {}
+}
