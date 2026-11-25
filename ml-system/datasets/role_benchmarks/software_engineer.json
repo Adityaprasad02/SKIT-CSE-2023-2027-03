@@ -1,0 +1,29 @@
+{
+  "benchmark_id": "software-engineer-v1",
+  "role": "Software Engineer",
+  "company": null,
+  "source": "ml-system",
+  "description": "General software engineering skill benchmark.",
+  "version": 1,
+  "required_skills": [
+    {
+      "skill_id": "python",
+      "importance": 0.9,
+      "required": true,
+      "required_level": "intermediate"
+    },
+    {
+      "skill_id": "git",
+      "importance": 0.8,
+      "required": true,
+      "required_level": "intermediate"
+    },
+    {
+      "skill_id": "docker",
+      "importance": 0.6,
+      "required": false,
+      "required_level": "beginner"
+    }
+  ],
+  "metadata": {}
+}

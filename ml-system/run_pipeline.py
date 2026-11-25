@@ -1,108 +1,109 @@
+import argparse
+import json
 from pathlib import Path
 
-from resume.parsing.parser import parse_resume_structured
-from resume.preprocessing.line_segmenter import segment_lines
-from resume.preprocessing.header_detector import detect_headers
-from resume.preprocessing.section_segmenter import segment_sections
-from resume.preprocessing.contact_extractor import extract_contact_info
+from benchmark.loader import load_benchmark
+from benchmark_pipeline.pipeline import rank_resume_against_benchmarks
+from recommendation.cli import build_skill_resolver, score_resume_against_job
+from recommendation.cli import summarize_match
 
 
-RESUME_PATH = Path(
-    "resume/tests/integration/fixtures/sample_resume.docx"
-)
+ROOT = Path(__file__).resolve().parent
 
 
-def main():
-
-    print("\n" + "=" * 70)
-    print("STEP 1: PARSING RESUME")
-    print("=" * 70)
-
-    raw_lines = parse_resume_structured(str(RESUME_PATH))
-
-    print(f"\nTotal Raw Lines: {len(raw_lines)}\n")
-
-    for line in raw_lines:
-        print(
-            f"[{line.line_index}] "
-            f"Text: {line.text}"
-        )
+def _load_job_description(arguments: argparse.Namespace) -> str:
+    if arguments.job_description:
+        return arguments.job_description
+    if arguments.job_file:
+        return Path(arguments.job_file).read_text(encoding="utf-8")
+    return ""
 
 
-    print("\n" + "=" * 70)
-    print("STEP 2: PREPROCESSING - LINE SEGMENTATION")
-    print("=" * 70)
-
-    lines = segment_lines(raw_lines)
-
-    print(f"\nTotal Processed Lines: {len(lines)}\n")
-
-    for line in lines:
-        print(
-            f"[{line.line_index}] "
-            f"{line.text}"
-        )
-
-
-    print("\n" + "=" * 70)
-    print("STEP 3: HEADER DETECTION")
-    print("=" * 70)
-
-    header_candidates = detect_headers(lines)
-
-    for candidate in header_candidates:
-        print(
-            f"Header: {candidate.line.text}"
-        )
-        print(
-            f"Score: {candidate.score}"
-        )
-        print()
-
-
-    print("\n" + "=" * 70)
-    print("STEP 4: SECTION SEGMENTATION")
-    print("=" * 70)
-
-    segmented = segment_sections(
-        lines,
-        header_candidates
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Run the complete ml-system resume analysis pipeline",
     )
-
-    for section_name, section_lines in segmented.sections.items():
-
-        print(f"\n[{section_name.upper()}]")
-
-        for line in section_lines:
-            print(line)
-
-
-    print("\n" + "=" * 70)
-    print("STEP 5: CONTACT EXTRACTION")
-    print("=" * 70)
-
-    full_text = "\n".join(
-        line.text
-        for line in sorted(
-            lines,
-            key=lambda line: line.line_index
-        )
+    parser.add_argument(
+        "resume",
+        nargs="?",
+        default=str(ROOT / "resume" / "tests" / "integration" / "fixtures" / "sample_resume.docx"),
+        help="Resume PDF or DOCX path",
     )
+    parser.add_argument("--job-description")
+    parser.add_argument("--job-file")
+    parser.add_argument("--benchmark")
+    parser.add_argument("--benchmark-dir")
+    parser.add_argument("--semantic", action="store_true")
+    parser.add_argument("--json", action="store_true")
+    arguments = parser.parse_args(argv)
 
-    contact_info = extract_contact_info(full_text)
+    try:
+        resolver, taxonomy = build_skill_resolver()
+        job_description = _load_job_description(arguments)
+        payload: dict = {}
 
-    print("\nEmails:")
-    print(contact_info.emails)
+        if job_description:
+            match = score_resume_against_job(arguments.resume, job_description)
+            payload["match"] = {
+                "score": match.score,
+                "matched_required": [skill.skill_id for skill in match.matched_required],
+                "missing_required": [skill.skill_id for skill in match.missing_required],
+                "matched_preferred": [skill.skill_id for skill in match.matched_preferred],
+                "missing_preferred": [skill.skill_id for skill in match.missing_preferred],
+            }
+            if arguments.semantic:
+                from resume.preprocessing.pipeline import preprocess_resume
+                from recommendation.semantic_matcher import SemanticMatcher
 
-    print("\nPhones:")
-    print(contact_info.phones)
+                resume = preprocess_resume(arguments.resume)
+                payload["match"]["semantic_score"] = SemanticMatcher().score(
+                    resume.full_text,
+                    job_description,
+                )
 
-    print("\nLinkedIn:")
-    print(contact_info.linkedin)
+        benchmarks = []
+        if arguments.benchmark:
+            benchmarks.append(load_benchmark(arguments.benchmark, taxonomy))
+        if arguments.benchmark_dir:
+            from benchmark.loader import load_benchmarks
 
-    print("\nGitHub:")
-    print(contact_info.github)
+            benchmarks.extend(load_benchmarks(arguments.benchmark_dir, taxonomy))
+
+        if benchmarks:
+            from resume.preprocessing.pipeline import preprocess_resume
+
+            resume = preprocess_resume(arguments.resume)
+            rankings = rank_resume_against_benchmarks(
+                resume,
+                benchmarks,
+                resolver,
+                taxonomy,
+            )
+            payload["benchmarks"] = [
+                {
+                    "benchmark_id": report.benchmark_id,
+                    "role": report.role,
+                    "score": report.score,
+                    "matched_skills": [item.skill_id for item in report.matched_skills],
+                    "missing_skills": [item.skill_id for item in report.missing_skills],
+                }
+                for report in rankings
+            ]
+
+        if arguments.json:
+            print(json.dumps(payload, indent=2))
+        else:
+            if job_description:
+                print(summarize_match(match))
+            for ranking in payload.get("benchmarks", []):
+                print(
+                    f"{ranking['role']}: {ranking['score']:.2f}/100 "
+                    f"(missing: {', '.join(ranking['missing_skills']) or 'none'})"
+                )
+    except Exception as exc:
+        parser.exit(status=1, message=f"Error: {exc}\n")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
